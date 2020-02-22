@@ -19,5 +19,6 @@ from blog import views
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
-    url('home/',views.home , name = 'home')
+    url('home/',views.home , name = 'home'),
+    url('register/',views.register , name = 'register'),
 ]
