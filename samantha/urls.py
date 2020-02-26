@@ -21,4 +21,5 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url('home/',views.home , name = 'home'),
     url('register/',views.register , name = 'register'),
+    url('post/',views.PostCreateView.as_view() , name = 'post')
 ]
