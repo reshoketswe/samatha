@@ -7,6 +7,7 @@ from .forms import UserRegistration #so we can add password to registration fiel
 from  django.contrib import messages
 from .models import Post
 from django.views.generic.edit import CreateView
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 
 # generic = [{'author':'Reshoketswe','content':'Sample Content', 'date':'20-20-2020' , 'title':'sample tile'}]
@@ -35,7 +36,7 @@ def register(request):
 
 
 
-class PostCreateView(CreateView): #user can only access pages using this if they are logged in
+class PostCreateView(LoginRequiredMixin,CreateView): #user can only access pages using this if they are logged in
 	model = Post
 
 	fields = ['title','content','image']
