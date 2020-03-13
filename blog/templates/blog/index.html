@@ -1,0 +1,92 @@
+{% extends "blog/base.html" %}
+<!-- {% load crispy_forms_tags %} -->
+{% block content %}
+
+	<div class="container-fluid">
+	    <form id="post-form">
+	        <div class="col">
+	            {% csrf_token %}
+	            {% for field in form %}
+	            <div class="form-group col-4">
+	                <label class="col-12">{{ field.label }}</label>
+	                {{ field }}
+	                
+	            </div>
+	            {% endfor %}
+	            
+					<button class= "info">Post</button>
+				
+	        </div>
+	    <form>
+	</div>
+	<hr />
+
+	{% for info in posts%}
+		<div style="width:900px; margin:0 auto;">
+			<div class="col-md-15" id="my_post">
+			  <div class="row no-gutters border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">
+			    <div class="col p-4 d-flex flex-column position-static">
+			      <h2 class="blog-post-title"> {{ info.title }} </h2>
+			      <p class="blog-post-meta">{{ info.date | date:"Y-m-d"}}  <a href="#">{{ info.author }}</a></p>
+			      <hr> <!-- inserts horizontal rule -->
+			      <p> {{ info.content }} </p>
+			    </div>
+			    	<div class="col-auto d-none d-lg-block">
+	          			<rect width="100%" height="100%" fill="#55595c"/>
+	        		</div>
+			  </div>
+			</div>
+		</div>
+	{% endfor %}
+
+{% endblock content %}
+
+{% block javascript %}
+	<script>
+	    /*
+	        On submiting the form, send the POST ajax
+	        request to server and after successfull submission
+	        display the object.
+	    */
+	    $("#post-form").submit(function (e) {
+	        // preventing from page reload and default actions
+	        e.preventDefault();
+	        // serialize the data for sending the form data.
+	        var serializedData = $(this).serialize();
+	        // make POST ajax call
+	        $.ajax({
+	            type: 'POST',
+	            url: "{% url 'post_' %}",
+	            data: serializedData,
+	            success: function (response) {
+	                // on successfull creating object
+	                // 1. clear the form.
+	                $("#post-form").trigger('reset');
+	                // 2. focus to nickname input 
+	                $("#id_author").focus();
+
+	                // display the newly friend to table.
+	                var instance = JSON.parse(response["instance"]);
+	                var fields = instance[0]["fields"];
+	                $("#my_post").prepend(
+	                    `<div class="row no-gutters border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">
+			    <div class="col p-4 d-flex flex-column position-static">
+			      
+			      <p class="blog-post-meta"> <a href="#">${fields["author"]||""}</a></p>
+			      <hr> <!-- inserts horizontal rule -->
+			      <p> ${fields["content"]||""} </p>
+			    </div>
+			    	<div class="col-auto d-none d-lg-block">
+	          			<rect width="100%" height="100%" fill="#55595c"/>
+	        		</div>
+			  </div>`
+	                )
+	            },
+	            error: function (response) {
+	                // alert the error if any error occured
+	                alert(response["responseJSON"]["error"]);
+	            }
+	        })
+	    })
+	</script>
+{% endblock javascript %}
